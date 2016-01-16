@@ -1,0 +1,11 @@
+version: "Apple Swift version 2.1.1 (swiftlang-700.1.101.15 clang-700.1.81)"
+options: "bc5a18667f17c1312a37fc09fff97062"
+build_time: [506197076, 838060000]
+inputs:
+  "/Users/arasul/Desktop/clip2gether iOS App/clip2gether/2fieApp/clip2gether/ViewController.swift": [504047120, 0]
+  "/Users/arasul/Desktop/clip2gether iOS App/clip2gether/2fieApp/clip2gether/GalleryController.swift": [504047379, 0]
+  "/Users/arasul/Desktop/clip2gether iOS App/clip2gether/2fieApp/clip2gether/InfoViewController.swift": [496172551, 0]
+  "/Users/arasul/Desktop/clip2gether iOS App/clip2gether/2fieApp/clip2gether/UploadViewController.swift": [504048443, 0]
+  "/Users/arasul/Desktop/clip2gether iOS App/clip2gether/2fieApp/clip2gether/AppDelegate.swift": [504048665, 0]
+  "/Users/arasul/Desktop/clip2gether iOS App/clip2gether/2fieApp/clip2gether/RegistrationController.swift": [506192197, 0]
+  "/Users/arasul/Desktop/clip2gether iOS App/clip2gether/2fieApp/clip2gether/LoginViewController.swift": [506192479, 0]

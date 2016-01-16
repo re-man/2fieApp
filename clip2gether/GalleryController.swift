@@ -53,7 +53,11 @@ class GalleryController: UIViewController {
     // show activity indicator while loading
     func webViewDidStartLoad(_ : UIWebView) {
         
-        self.webview.allowsLinkPreview = true
+        if #available(iOS 9.0, *) {
+            self.webview.allowsLinkPreview = true
+        } else {
+            // Fallback on earlier versions
+        }
         self.webview.userInteractionEnabled = true
         self.webview.hidden = true
         activityIndicator.startAnimating()
@@ -63,7 +67,11 @@ class GalleryController: UIViewController {
     // stop activity indicator when loading finished
     func webViewDidFinishLoad(_ : UIWebView) {
         
-        webview.allowsLinkPreview = true
+        if #available(iOS 9.0, *) {
+            webview.allowsLinkPreview = true
+        } else {
+            // Fallback on earlier versions
+        }
         self.webview.hidden = false
         activityIndicator.stopAnimating()
         

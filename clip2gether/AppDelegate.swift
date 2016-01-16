@@ -25,6 +25,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     }
     
     // Handle specific shortcut
+    @available(iOS 9.0, *)
     func handleShortcut( shortcutItem:UIApplicationShortcutItem ) -> Bool {
         if( shortcutItem.type == "name of UIApplicationShortcutItem" ) {
             if (loggedIn == true) {
@@ -35,6 +36,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     }
     
     // Execute when 3D Touch Quick Action is performed
+    @available(iOS 9.0, *)
     func application(application: UIApplication, performActionForShortcutItem shortcutItem: UIApplicationShortcutItem, completionHandler: (Bool) -> Void) {
         
         print("Shortcut tapped")

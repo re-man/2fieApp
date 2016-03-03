@@ -115,7 +115,7 @@ class UploadViewController: UIViewController, UINavigationControllerDelegate {
             if let error = error { print(error) }
             if let data = data{ print("data =\(data)") }
             if let response = response {
-                //print("response = \(response)")
+                print("response = \(response)")
                 
                 dispatch_async(dispatch_get_main_queue()) {
                     activityIndicator.stopAnimating()

@@ -10,11 +10,42 @@ import UIKit
 import AVFoundation
 import Social
 import SafariServices
+import CoreData
 
 var globalImage: UIImage = UIImage()
 
 class ViewController: UIViewController, UINavigationControllerDelegate, UIImagePickerControllerDelegate {
 
+    @IBOutlet var logoutBtn: UIButton!
+    
+    @IBAction func logoutButton(sender: AnyObject) {
+        // Delete Userdata from Core
+        let appDel:AppDelegate = (UIApplication.sharedApplication().delegate as! AppDelegate)
+        let managedContext:NSManagedObjectContext = appDel.managedObjectContext!
+        let fetchRequest = NSFetchRequest()
+        let entityDescription = NSEntityDescription.entityForName("Users", inManagedObjectContext: managedContext)
+        fetchRequest.entity = entityDescription
+        
+        do {
+            let result = try managedContext.executeFetchRequest(fetchRequest)
+            let user = result[0] as! NSManagedObject
+            managedContext.deleteObject(user)
+        } catch {
+            let fetchError = error as NSError
+            print(fetchError)
+        }
+        
+        do {
+            try managedContext.save()
+            NSLog("Logout war erfolgreich")
+        } catch {
+            let saveError = error as NSError
+            print(saveError)
+        }
+        
+        // Switch ViewController
+        self.performSegueWithIdentifier("logout", sender: self)
+    }
     
     @IBAction func cameraButton(sender: AnyObject) {
         
@@ -83,6 +114,10 @@ class ViewController: UIViewController, UINavigationControllerDelegate, UIImageP
     }
     
     override func viewWillAppear(animated: Bool) {
+        
+        dispatch_async(dispatch_get_main_queue(),{
+            self.logoutBtn.layer.cornerRadius = 3.0
+        })
         
         self.navigationController?.setNavigationBarHidden(true, animated: true)
         UIApplication.sharedApplication().statusBarStyle = .Default

@@ -15,7 +15,8 @@ var globalUsr = ""
 var globalPwd = ""
 var globalEmail = ""
 let key:String = "ASdno124KA123ASD230ASDm0"
-var loggedIn = false;
+var loggedIn = false
+var result = [AnyObject]()
 
 // Declaration of loading wheel globally
 var activityIndicator = UIActivityIndicatorView()
@@ -51,7 +52,7 @@ class LoginViewController: UIViewController, UITextFieldDelegate {
     
     @IBAction func loginButtonPressed(sender: AnyObject) {
         
-        login()
+        login("", _password: "")
         
     }
     
@@ -74,7 +75,7 @@ class LoginViewController: UIViewController, UITextFieldDelegate {
         if textField == username {
             password.becomeFirstResponder()
         } else if textField == password {
-            login()
+            login("", _password: "")
             
         }
         return true
@@ -122,43 +123,64 @@ class LoginViewController: UIViewController, UITextFieldDelegate {
         
     }
     
-    func login() {
+    override func viewDidAppear(animated: Bool) {
+        
+        var benutzername:String = "";
+        var passwort:String = "";
+        
+        let appDel:AppDelegate = (UIApplication.sharedApplication().delegate as! AppDelegate)
+        let managedContext:NSManagedObjectContext = appDel.managedObjectContext!
+        
+        // Initialize Fetch Request
+        let fetchRequest = NSFetchRequest()
+        
+        // Create Entity Description
+        let entityDescription = NSEntityDescription.entityForName("Users", inManagedObjectContext: managedContext)
+        
+        // Configure Fetch Request
+        fetchRequest.entity = entityDescription
+        
+        do {
+            result = try managedContext.executeFetchRequest(fetchRequest)
+            
+            if (result.count > 0) {
+                let userCred = result[0] as! NSManagedObject
+                
+                benutzername = (userCred.valueForKey("username") as? String)!
+                passwort = (userCred.valueForKey("password") as? String)!
+                
+                // Auto-Login if any username and password exist
+                login(benutzername, _password: passwort)
+                
+            }
+            
+        } catch {
+            let fetchError = error as NSError
+            print(fetchError)
+        }
+    
+    }
+
+    func login(_username:String, _password:String) {
         
         // Stop user actions
         activityIndicator.startAnimating()
         UIApplication.sharedApplication().beginIgnoringInteractionEvents()
         
-        // send login data to global variable for 2fie upload later
-        globalUsr = username.text!
-        globalPwd = password.text!
-        
-        // Save CoreData
-        let appDel:AppDelegate = (UIApplication.sharedApplication().delegate as! AppDelegate)
-        let managedContext:NSManagedObjectContext = appDel.managedObjectContext!
-        
-        let newUser = NSEntityDescription.insertNewObjectForEntityForName("Users", inManagedObjectContext: managedContext)
-        newUser.setValue(username.text, forKey: "username")
-        newUser.setValue(password.text, forKey: "password")
-        
-        do {
-            try managedContext.save()
-        } catch let error as NSError {
-            print("Could not save \(error), \(error.userInfo)")
+        // send login data to global variable for 2fie upload late
+        if (_username == "") {
+            globalUsr = username.text!
+        } else {
+            globalUsr = _username
         }
         
-        // Fetch CoreData
-        var users = [NSManagedObject]()
-        let fetchRequest = NSFetchRequest(entityName: "Users")
-        do {
-            let results =
-            try managedContext.executeFetchRequest(fetchRequest)
-            users = results as! [NSManagedObject]
-            //print(users)
-        } catch let error as NSError {
-            print("Could not fetch \(error), \(error.userInfo)")
+        if (_password == "") {
+            globalPwd = password.text!
+        } else {
+            globalPwd = _password
         }
         
-        // PHP Post request to check credentials
+        // HTTP Post request to check credentials
         let request = NSMutableURLRequest(URL: NSURL(string: "http://www.clip2gether.com/mobile/app/v1/iOS/login/login.php")!)
         request.HTTPMethod = "POST"
         let postString = "commkey=\(key)&username=\(globalUsr)&password=\(globalPwd)" // check key, username and password
@@ -194,8 +216,24 @@ class LoginViewController: UIViewController, UITextFieldDelegate {
             // Response 100 means user is authorized
             if intResponseString! == 100 {
                 
-                NSLog("Login hat funktioniert")
+                NSLog("Login war erfolgreich")
                 loggedIn = true
+                
+                // Save CoreData
+                if (result.count == 0) {
+                    let appDel:AppDelegate = (UIApplication.sharedApplication().delegate as! AppDelegate)
+                    let managedContext:NSManagedObjectContext = appDel.managedObjectContext!
+                
+                    let newUser = NSEntityDescription.insertNewObjectForEntityForName("Users", inManagedObjectContext: managedContext)
+                    newUser.setValue(self.username.text, forKey: "username")
+                    newUser.setValue(self.password.text, forKey: "password")
+                
+                    do {
+                        try managedContext.save()
+                    } catch let error as NSError {
+                        print("Could not save \(error), \(error.userInfo)")
+                    }
+                }
                 
                 dispatch_async(dispatch_get_main_queue()) {
                     self.performSegueWithIdentifier("login", sender: self)
